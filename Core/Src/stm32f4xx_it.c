@@ -22,6 +22,9 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
+#include <math.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,8 +62,13 @@ extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN EV */
-extern uint32_t raw_measure;
-extern uint32_t real_measure;
+volatile uint32_t raw_measure;
+volatile uint32_t real_measure;
+
+volatile float voltage;
+
+volatile uint32_t prev_measure = 0;
+
 
 /* USER CODE END EV */
 
@@ -229,6 +237,19 @@ void TIM2_IRQHandler(void)
 	HAL_ADC_Start(&hadc1);
 
 	raw_measure = HAL_ADC_GetValue(&hadc1);
+
+	voltage = (raw_measure / 4095.0) * 3.30;
+
+	real_measure = (int)(voltage * 100.0); //multiplied by 100 to present as int for Out_Fix
+
+
+	if(abs(real_measure - prev_measure) >= 2){ //prevents continuous flashing on screen
+		Out_Fix(real_measure);
+	}
+
+	prev_measure = real_measure;
+
+
 
 
   /* USER CODE END TIM2_IRQn 0 */

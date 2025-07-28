@@ -54,6 +54,9 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
+void Out_Fix(uint32_t num);
+void Out_Dec(uint32_t num);
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

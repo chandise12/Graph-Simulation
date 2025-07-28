@@ -27,6 +27,7 @@
 #include "fonts.h"
 #include "testimg.h"
 
+
 #include "math.h"
 /* USER CODE END Includes */
 
@@ -59,8 +60,12 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-uint32_t *raw_measure;
-uint32_t *real_measure;
+extern volatile uint32_t raw_measure;
+extern volatile uint32_t real_measure;
+
+extern volatile float voltage;
+
+extern volatile uint32_t prev_measure;
 
 /* USER CODE END PV */
 
@@ -73,14 +78,43 @@ static void MX_ADC1_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
+/*
+ * #include "st7735.h"
+
+#define GRAPH_EDGE_L 10
+#define GRAPH_EDGE_R 120
+#define GRAPH_EDGE_T 30
+#define GRAPH_EDGE_B 130
+#define DATA_H 40
+#define DATA_L 123
+#define THICKNESS 3
+
+class Graph {
+
+public:
+	uint32_t convert_position(uint32_t);
+
+
+private:
+
+
+};
+ *
+ */
+
+
+
+
+
+
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 //void loop();
 void testing_screen();
-void Out_Fix(uint32_t num);
-void Out_Dec(uint32_t num);
+
 
 /* USER CODE END 0 */
 
@@ -125,13 +159,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   testing_screen();
-  HAL_Delay(2000);
+  HAL_Delay(200);
 
-  Out_Dec(22);
 
-  HAL_ADC_Start(&hadc1);
-  HAL_TIM_Base_Start_IT(&htim2); //start 10Hz periodic interrupt
-
+//  HAL_TIM_Base_Start_IT(&htim2); //start 10Hz periodic interrupt
 
 
 
@@ -491,7 +522,7 @@ void Out_Fix(uint32_t num){ //outputs num with fixed decimal value
 	int res = pow(10, RESOLUTION-1);
 
 
-	for(int i = 0; i < RESOLUTION; i++){
+	for(int i = 0; i <= RESOLUTION; i++){
 		if(res < 1){
 			//number is too big for the given resolution, output an error
 			ST7735_WriteString(0, 64, "ERR", Font_16x26, ST7735_RED, ST7735_COLOR565(11100,110111, 11111));
