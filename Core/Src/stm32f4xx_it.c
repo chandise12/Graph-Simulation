@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_it.h"
+#include "graph.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdlib.h>
@@ -68,6 +69,11 @@ volatile uint32_t real_measure;
 volatile float voltage;
 
 volatile uint32_t prev_measure = 0;
+volatile uint16_t pos;
+
+volatile uint32_t buffer_size = 0;
+uint16_t buffer[CAPACITY];
+
 
 
 /* USER CODE END EV */
@@ -240,14 +246,31 @@ void TIM2_IRQHandler(void)
 
 	voltage = (raw_measure / 4095.0) * 3.30;
 
-	real_measure = (int)(voltage * 100.0); //multiplied by 100 to present as int for Out_Fix
+	pos = convert_position(voltage);
 
+//	real_measure = (int)(voltage * 100.0); //multiplied by 100 to present as int for Out_Fix
 
-	if(abs(real_measure - prev_measure) >= 2){ //prevents continuous flashing on screen
-		Out_Fix(real_measure);
+//	if(abs(real_measure - prev_measure) >= 2){ //prevents continuous flashing on screen
+////		Out_Fix(real_measure);
+////		Out_Dec(pos);
+//
+//	}
+//	prev_measure = real_measure;
+
+	if(buffer_size == CAPACITY){
+		shift_buffer(buffer);
+		buffer[buffer_size-1] = pos;
+	}else{
+		buffer[buffer_size] = pos;
 	}
 
-	prev_measure = real_measure;
+	buffer_size = buffer_size == CAPACITY ? buffer_size: buffer_size+1;
+
+	draw_graph(buffer);
+
+
+
+
 
 
 

@@ -26,6 +26,7 @@
 #include "st7735.h"
 #include "fonts.h"
 #include "testimg.h"
+#include "graph.h"
 
 
 #include "math.h"
@@ -60,12 +61,6 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-extern volatile uint32_t raw_measure;
-extern volatile uint32_t real_measure;
-
-extern volatile float voltage;
-
-extern volatile uint32_t prev_measure;
 
 /* USER CODE END PV */
 
@@ -77,36 +72,6 @@ static void MX_SPI2_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-
-/*
- * #include "st7735.h"
-
-#define GRAPH_EDGE_L 10
-#define GRAPH_EDGE_R 120
-#define GRAPH_EDGE_T 30
-#define GRAPH_EDGE_B 130
-#define DATA_H 40
-#define DATA_L 123
-#define THICKNESS 3
-
-class Graph {
-
-public:
-	uint32_t convert_position(uint32_t);
-
-
-private:
-
-
-};
- *
- */
-
-
-
-
-
-
 
 /* USER CODE END PFP */
 
@@ -158,11 +123,12 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  testing_screen();
-  HAL_Delay(200);
+//  testing_screen();
+
+  ST7735_FillScreen(BACKGROUND);
 
 
-//  HAL_TIM_Base_Start_IT(&htim2); //start 10Hz periodic interrupt
+  HAL_TIM_Base_Start_IT(&htim2); //start 10Hz periodic interrupt
 
 
 
@@ -335,7 +301,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 8400000;
+  htim2.Init.Period = 100000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
